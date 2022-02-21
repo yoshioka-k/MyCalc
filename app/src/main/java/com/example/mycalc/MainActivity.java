@@ -20,25 +20,25 @@ public class MainActivity extends AppCompatActivity {
 
         List<Button> buttonList = new ArrayList<>();
         // 数字ボタンを取得　0～9
-        buttonList.add((Button) findViewById(R.id.btZero));
-        buttonList.add((Button) findViewById(R.id.btOne));
-        buttonList.add((Button) findViewById(R.id.btTwo));
-        buttonList.add((Button) findViewById(R.id.btThree));
-        buttonList.add((Button) findViewById(R.id.btFour));
-        buttonList.add((Button) findViewById(R.id.btFive));
-        buttonList.add((Button) findViewById(R.id.btSix));
-        buttonList.add((Button) findViewById(R.id.btSeven));
-        buttonList.add((Button) findViewById(R.id.btEight));
-        buttonList.add((Button) findViewById(R.id.btNine));
+        buttonList.add(findViewById(R.id.btZero));
+        buttonList.add(findViewById(R.id.btOne));
+        buttonList.add(findViewById(R.id.btTwo));
+        buttonList.add(findViewById(R.id.btThree));
+        buttonList.add(findViewById(R.id.btFour));
+        buttonList.add(findViewById(R.id.btFive));
+        buttonList.add(findViewById(R.id.btSix));
+        buttonList.add(findViewById(R.id.btSeven));
+        buttonList.add(findViewById(R.id.btEight));
+        buttonList.add(findViewById(R.id.btNine));
         // 四則演算+αボタンを取得
-        buttonList.add((Button) findViewById(R.id.btAllclear));
-        buttonList.add((Button) findViewById(R.id.btClear));
-        buttonList.add((Button) findViewById(R.id.btDivided));
-        buttonList.add((Button) findViewById(R.id.btTimes));
-        buttonList.add((Button) findViewById(R.id.btMinus));
-        buttonList.add((Button) findViewById(R.id.btPlus));
-        buttonList.add((Button) findViewById(R.id.btEquals));
-        buttonList.add((Button) findViewById((R.id.btPoint)));
+        buttonList.add(findViewById(R.id.btAllclear));
+        buttonList.add(findViewById(R.id.btClear));
+        buttonList.add(findViewById(R.id.btDivided));
+        buttonList.add(findViewById(R.id.btTimes));
+        buttonList.add(findViewById(R.id.btMinus));
+        buttonList.add(findViewById(R.id.btPlus));
+        buttonList.add(findViewById(R.id.btEquals));
+        buttonList.add(findViewById(R.id.btPoint));
 
         ButtonClickListener buttonClicklistener = new ButtonClickListener();
 
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         private List<BigDecimal> _numList = new ArrayList<>();
         private List<Character> _funcList = new ArrayList<>();
-        private String _inputValue = "";
+        private String _inputValue = "0";
         char inputFunc;
         TextView formula = findViewById(R.id.tvFormula);
         TextView total = findViewById(R.id.tvTotal);
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     addText();
                     break;
 
-                // 記号ボタン(+、-、*、/、=、%)の場合
+                // 記号ボタン(+、-、*、/、=)の場合
                 case R.id.btPlus:
                     inputFunc = '+';
                     addTextFunc();
@@ -129,17 +129,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                     inputFunc = '=';
                     addTextFunc();
+                    formula.setText("");
                     break;
 
                 case R.id.btClear:
                     total.setText("0");
-                    _inputValue = "";
+                    _inputValue = "0";
                     break;
                 case R.id.btAllclear:
                     total.setText("0");
-                    _numList.clear();
-                    _inputValue = "";
-                    formula.setText("");
+                    clearMethod();
                     break;
 
                 case R.id.btPoint:
@@ -162,9 +161,17 @@ public class MainActivity extends AppCompatActivity {
             引　数：なし
             戻り値：なし */
         private void addText() {
+            /*  _funcList 0番目に"="が入っている時にクリアにする
+                例えば「1 + 3 =」と連続で入力した場合、calculater()の演算が終わった時点で
+                _numListと_funcListにはresultと"="が入っているため
+                かつ、sizeが0ではないことを保証した上でget(0)しないとエラーになるため
+             */
             if (_funcList.size() != 0 && _funcList.get(0) == '=') {
                 _numList.clear();
                 _funcList.clear();
+            }
+            if (_inputValue.equals("0")) {
+                _inputValue = "";
             }
             if (_inputValue.length() == 0) {
                 total.setText("");
@@ -184,15 +191,16 @@ public class MainActivity extends AppCompatActivity {
             引　数：なし
             戻り値：なし */
         private void addTextFunc() {
+            String res = "";
             if (_funcList.size() != 0 && _funcList.get(0) == '=') {
                 _funcList.set(0, inputFunc);
             }
             if (!(_inputValue.equals(""))) {
                 addList();
-                _inputValue = "";
+                _inputValue = "0";
                 if (_numList.size() > 1) {
-                    String result = calculater().toPlainString();
-                    total.setText(result);
+                    res = calculater();
+                    total.setText(res);
                 }
             }
             if (!(_funcList.contains('='))) {
@@ -211,11 +219,23 @@ public class MainActivity extends AppCompatActivity {
             _funcList.add(inputFunc);
         }
 
+        /*  機　能：numListとfuncListと_inputValueとformuraをクリアにする
+            引　数：なし
+            戻り値：なし
+         */
+        private void clearMethod() {
+            _numList.clear();
+            _funcList.clear();
+            _inputValue = "0";
+            formula.setText("");
+        }
+
         /*  機　能：_funcListから記号を受け取り、その記号に応じた計算結果を返す
             引　数：なし
             戻り値：演算した結果を10進数に直したもの(BigDecimal) */
-        private BigDecimal calculater() {
+        private String calculater() {
             BigDecimal result = new BigDecimal(0);
+            String msg = "";
             switch(_funcList.get(0)) {
                 case '+':
                     result = _numList.get(0).add(_numList.get(1));
@@ -227,13 +247,24 @@ public class MainActivity extends AppCompatActivity {
                     result = _numList.get(0).multiply(_numList.get(1));
                     break;
                 case '÷':
-                    result = _numList.get(0).divide(_numList.get(1), 12, BigDecimal.ROUND_HALF_UP);
+                    if (_numList.get(0).signum() == 0 && _numList.get(1).signum() == 0) {
+                        msg = "結果は未定義です";
+                        clearMethod();
+                    } else if (_numList.get(1).signum() == 0) {
+                        msg = "0 で割ることはできません";
+                        clearMethod();
+                    } else {
+                        result = _numList.get(0).divide(_numList.get(1), 12, BigDecimal.ROUND_HALF_UP);
+                    }
             }
-
-            _numList.set(0, result);
-            _numList.remove(1);
-            _funcList.remove(0);
-            return result.stripTrailingZeros();
+            if (!(msg.equals("結果は未定義です") || msg.equals("0 で割ることはできません"))) {
+                _numList.set(0, result);
+                _numList.remove(1);
+                _funcList.remove(0);
+                result = result.stripTrailingZeros(); // 末尾の0を削除する
+                msg = result.toPlainString();
+            }
+            return msg;
         }
     }
 }
