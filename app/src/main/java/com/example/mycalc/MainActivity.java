@@ -107,28 +107,32 @@ public class MainActivity extends AppCompatActivity {
 
                 // 記号ボタン(+、-、*、/、=)の場合
                 case R.id.btPlus:
+                    funcRemove('+');
+                    addTextFunc('+');
                     inputFunc = '+';
-                    addTextFunc();
                     break;
                 case R.id.btMinus:
+                    funcRemove('-');
+                    addTextFunc('-');
                     inputFunc = '-';
-                    addTextFunc();
                     break;
                 case R.id.btTimes:
+                    funcRemove('×');
+                    addTextFunc('×');
                     inputFunc = '×';
-                    addTextFunc();
                     break;
                 case R.id.btDivided:
+                    funcRemove('÷');
+                    addTextFunc('÷');
                     inputFunc = '÷';
-                    addTextFunc();
                     break;
 
                 case R.id.btEquals:
                     if (_funcList.size() != 0 && _funcList.get(0) == '=') {
                         break;
                     }
+                    addTextFunc('=');
                     inputFunc = '=';
-                    addTextFunc();
                     formula.setText("");
                     break;
 
@@ -188,23 +192,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /*  機　能：記号ボタンが押された際に、その直前の計算を行って値を返す。=だけ挙動が違う
-            引　数：なし
+            引　数：後から入力した記号func(char)
             戻り値：なし */
-        private void addTextFunc() {
+        private void addTextFunc(char func) {
             String res = "";
             if (_funcList.size() != 0 && _funcList.get(0) == '=') {
                 _funcList.set(0, inputFunc);
             }
-            if (!(_inputValue.equals(""))) {
-                addList();
-                _inputValue = "0";
-                if (_numList.size() > 1) {
-                    res = calculater();
-                    total.setText(res);
+            if (!(inputFunc == '+' || inputFunc == '-' || inputFunc == '×' || inputFunc == '÷')) {
+                if (!(_inputValue.equals(""))) {
+                    addList(func);
+                    _inputValue = "0";
+                    if (_numList.size() > 1) {
+                        res = calculater();
+                        total.setText(res);
+                    }
                 }
             }
             if (!(_funcList.contains('='))) {
-                String formulaFunc = String.valueOf(inputFunc);
+                String formulaFunc = String.valueOf(func);
                 formula.setText(formulaFunc);
             } else {
                 formula.setText("");
@@ -212,11 +218,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /*  機　能：数字配列_numListと_funcListにそれぞれ値をセットする
-            引　数：なし
+            引　数：後から入力した記号func(char)
             戻り値：なし */
-        private void addList() {
+        private void addList(char func) {
             _numList.add(new BigDecimal(_inputValue));
-            _funcList.add(inputFunc);
+            _funcList.add(func);
+        }
+
+        /*  機　能：直前に入力されたinputFuncが記号かどうか判断し、記号を上書きする
+            引　数：上書きしたい記号func(char)
+            戻り値：なし
+         */
+        private void funcRemove(char func) {
+            if (inputFunc == '+' || inputFunc == '-' || inputFunc == '×' || inputFunc == '÷') {
+                inputFunc = func;
+                _funcList.set(_funcList.size() -1, inputFunc);
+            }
         }
 
         /*  機　能：numListとfuncListと_inputValueとformuraをクリアにする
