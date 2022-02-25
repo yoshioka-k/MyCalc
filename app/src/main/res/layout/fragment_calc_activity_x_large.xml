@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:textColor="#c0c0c0"
-            android:textSize="30sp"
+            android:textSize="70sp"
             android:gravity="right"/>
 
         <TextView
@@ -30,7 +30,8 @@
             android:layout_marginTop="70dp"
             android:textColor="@color/black"
             android:text="@string/tv_total"
-            android:textSize="130sp"
+            android:textSize="80sp"
+            android:layout_gravity="center"
             android:gravity="right"/>
     </FrameLayout>
 
