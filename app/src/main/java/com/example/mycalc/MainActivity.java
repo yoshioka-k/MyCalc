@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     addTextFunc('=');
                     inputFunc = '=';
-                    formula.setText("");
                     break;
 
                 case R.id.btClear:
@@ -197,16 +196,15 @@ public class MainActivity extends AppCompatActivity {
         private void addTextFunc(char func) {
             String res = "";
             if (_funcList.size() != 0 && _funcList.get(0) == '=') {
-                _funcList.set(0, inputFunc);
+                _funcList.set(0, func);
+                return;
             }
             if (!(inputFunc == '+' || inputFunc == '-' || inputFunc == '×' || inputFunc == '÷')) {
-                if (!(_inputValue.equals(""))) {
-                    addList(func);
-                    _inputValue = "0";
-                    if (_numList.size() > 1) {
-                        res = calculater();
-                        total.setText(res);
-                    }
+                addList(func);
+                _inputValue = "0";
+                if (_numList.size() > 1) {
+                    res = calculater();
+                    total.setText(res);
                 }
             }
             if (!(_funcList.contains('='))) {
@@ -230,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             戻り値：なし
          */
         private void funcRemove(char func) {
-            if (inputFunc == '+' || inputFunc == '-' || inputFunc == '×' || inputFunc == '÷') {
+            if (inputFunc == '+' || inputFunc == '-' || inputFunc == '×' || inputFunc == '÷' || inputFunc == '=') {
                 inputFunc = func;
                 _funcList.set(_funcList.size() -1, inputFunc);
             }
