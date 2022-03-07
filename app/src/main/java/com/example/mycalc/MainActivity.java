@@ -112,9 +112,15 @@ public class MainActivity extends AppCompatActivity {
                     inputFunc = '+';
                     break;
                 case R.id.btMinus:
-                    funcRemove('-');
-                    addTextFunc('-');
-                    inputFunc = '-';
+                    if (_inputValue.equals("0")) {
+                        _inputValue = "";
+                        _inputValue = "-";
+                        total.setText(_inputValue);
+                    } else  {
+                        funcRemove('-');
+                        addTextFunc('-');
+                        inputFunc = '-';
+                }
                     break;
                 case R.id.btTimes:
                     funcRemove('×');
@@ -133,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     addTextFunc('=');
                     inputFunc = '=';
+                    formula.setText("");
                     break;
 
                 case R.id.btClear:
